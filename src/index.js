@@ -1,5 +1,3 @@
-'use strict';
-
 const itemArray = [];
 
 // get DOM elements as variables for further usage
@@ -10,24 +8,21 @@ const buttonSortByValue = document.querySelector('.sort-value');
 const buttonDelete = document.querySelector('.delete');
 const buttonShowXML = document.querySelector('.show-xml');
 const itemList = document.querySelector('.name-list');
-const selectionHandler = document.querySelector('ul');
+const itemSelectionHandler = document.querySelector('ul');
 
-// alpha-numeric check from here:
-// https://stackoverflow.com/questions/4434076/best-way-to-alphanumeric-check-in-javascript
+// perform alpha-numeric check
 // note, that only Latin alphabet is supported
 function isAlphaNumeric(string) {
-  let code, i, len;
-
-  for (i = 0, len = string.length; i < len; i++) {
-    code = string.charCodeAt(i);
-    if (!(code > 47 && code < 58) && // numeric (0-9)
-        !(code > 64 && code < 91) && // upper alpha (A-Z)
-        !(code > 96 && code < 123)) { // lower alpha (a-z)
+  for (let i = 0, len = string.length; i < len; i += 1) {
+    const code = string.charCodeAt(i);
+    if (!(code > 47 && code < 58) // numeric (0-9)
+        && !(code > 64 && code < 91) // upper alpha (A-Z)
+        && !(code > 96 && code < 123)) { // lower alpha (a-z)
       return false;
     }
   }
   return true;
-};
+}
 
 // split input string with '=' separator and validate name/value parts
 function parseInput(string) {
@@ -45,28 +40,28 @@ function parseInput(string) {
   return []; // wrong input case
 }
 
-// adopted from here:
-// https://stackoverflow.com/questions/33246967/select-item-from-unordered-list-in-html
-selectionHandler.addEventListener('click', (event) => {
+// select item
+itemSelectionHandler.addEventListener('click', (event) => {
   let selected;
 
-  if(event.target.tagName === 'LI') {
+  if (event.target.tagName === 'LI') {
     selected = document.querySelector('li.selected');
 
     if (selected) {
       selected.className = '';
     }
 
-    event.target.className = 'selected';
+    event.target.classList.add('selected');
   }
 });
 
-buttonAdd.addEventListener('click', (event) => {
+buttonAdd.addEventListener('click', () => {
   // get user input
   const info = input.value;
 
   const nameValue = parseInput(info);
   if (nameValue.length === 0) { // incorrect input case
+    // eslint-disable-next-line no-alert
     alert('Please, enter a valid value');
   } else {
     // store name/value pair
@@ -75,49 +70,44 @@ buttonAdd.addEventListener('click', (event) => {
     // add new input to itemList
     itemList.insertAdjacentHTML('beforeend', `
       <li>${info}</li>
-    `
-    );
+    `);
 
     // clear input
     input.value = '';
   }
 });
 
-buttonSortByName.addEventListener('click', (event) => {
-  const sortedArray = itemArray.sort((prevItem, currentItem) => 
-    prevItem[0].localeCompare(currentItem[0]));
+function updateItemList(array, doSortByName) {
+  // choose Name index or Value index
+  const index = doSortByName ? 0 : 1;
+
+  // sort array by Name or by Value
+  const sortedArray = array.sort((prevItem, currentItem) => (
+    prevItem[index].localeCompare(currentItem[index])
+  ));
 
   // clear itemList
-  itemList.innerHTML = "";
+  itemList.innerHTML = '';
 
-  for (const item of sortedArray) {
+  sortedArray.forEach((item) => (
     // add new item to itemList
     itemList.insertAdjacentHTML('beforeend', `
       <li>${item[0]}=${item[1]}</li>
-    `
-    );
-  }
+    `)
+  ));
+}
 
-  console.log(sortedArray);
+buttonSortByName.addEventListener('click', () => {
+  const doSortByName = true;
+  updateItemList(itemArray, doSortByName);
 });
 
-buttonSortByValue.addEventListener('click', (event) => {
-  const sortedArray = itemArray.sort((prevItem, currentItem) => 
-    prevItem[1].localeCompare(currentItem[1]));
-
-  // clear itemList
-  itemList.innerHTML = "";
-
-  for (const item of sortedArray) {
-    // add new item to itemList
-    itemList.insertAdjacentHTML('beforeend', `
-      <li>${item[0]}=${item[1]}</li>
-    `
-    );
-  }
+buttonSortByValue.addEventListener('click', () => {
+  const doSortByName = false;
+  updateItemList(itemArray, doSortByName);
 });
 
-buttonDelete.addEventListener('click', (event) => {
+buttonDelete.addEventListener('click', () => {
   // get selected item to be deleted
   const selectedItem = document.querySelector('li.selected');
 
@@ -125,17 +115,19 @@ buttonDelete.addEventListener('click', (event) => {
   const nameValueToDelete = selectedItem.textContent.split('=');
 
   // find index of item in itemArray
-  const itemToDelete = itemArray.findIndex(element => 
-    (element[0] === nameValueToDelete[0] && element[1] === nameValueToDelete[1]));
+  const itemToDelete = itemArray.findIndex((element) => (
+    element[0] === nameValueToDelete[0] && element[1] === nameValueToDelete[1]
+  ));
 
   // delete selected item from itemArray
   itemArray.splice(itemToDelete, 1);
 
   // delete selected item from DOM ul
-  selectedItem.innerHTML = "";
+  selectedItem.innerHTML = '';
 });
 
-buttonShowXML.addEventListener('click', (event) => {
+buttonShowXML.addEventListener('click', () => {
   // use XMLSerializer for DOM elements representation in XML format
+  // eslint-disable-next-line no-alert
   alert((new XMLSerializer()).serializeToString(itemList));
 });

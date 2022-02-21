@@ -9,7 +9,7 @@ html {
   gap: 20px;
   align-items: center;
 }
- 
+
 .container {
   display: flex;
   flex-direction: row;
@@ -18,7 +18,7 @@ html {
 
 .legend {
   font-size: 14px;
-  color: rgb(65, 65, 65);
+  color: #414141;
 }
 
 .buttons {
@@ -34,11 +34,11 @@ html {
 .button {
   width: 100px;
   height: 30px;
-  color: rgb(65, 65, 65);
+  color: #414141;
 }
 
 .button:hover {
-  background-color: rgb(206, 206, 206);
+  background-color: #cecece;
 }
 
 .list {
@@ -52,7 +52,7 @@ html {
 }
 
 .selected {
-  background: rgb(206, 206, 206);
+  background: #cecece;
 }
 
 @media (max-width: 600px) {
